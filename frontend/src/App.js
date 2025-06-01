@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import BookTable from "./components/BookTable";
 
 function App() {
-  const [region, setRegion] = useState("en-US");
+  const [region, setRegion] = useState("en");
   const [seed, setSeed] = useState("1234");
   const [likes, setLikes] = useState(3.5);
   const [reviews, setReviews] = useState(4.0);
 
   const regions = [
-    { code: "en-US", label: "English (USA)" },
-    { code: "de-DE", label: "German (Germany)" },
-    { code: "ja-JP", label: "Japanese (Japan)" }
+    { code: "en", label: "English (USA)" },
+    { code: "fr", label: "French" },
+    { code: "es", label: "Spanish" }
   ];
 
   const randomizeSeed = () => setSeed(Math.floor(Math.random() * 100000).toString());
