@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: book-backend
+    name: book-backend-1
     env: docker
     repo: https://github.com/sifat1/BooksReviewGen
     branch: master
@@ -10,7 +10,7 @@ services:
     autoDeploy: true
 
   - type: web
-    name: book-frontend
+    name: book-frontend-1
     env: docker
     repo: https://github.com/sifat1/BooksReviewGen
     branch: master
