@@ -8,7 +8,7 @@ function ReviewList({ isbn, regions, seed, reviews }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/Books/${isbn}/reviews`, {
+        const res = await axios.get(`https://book-backend-1-dwnw.onrender.com/api/Books/${isbn}/reviews`, {
           params: { regions, seed, reviewsCount : reviews },
         });
 

@@ -8,7 +8,7 @@ import BookDetails from "./BookDetails";
 
 // API call to fetch books
 const fetchBooks = async (page, region, seed, likes, reviewsCount) => {
-  const res = await axios.get("http://localhost:8080/api/Books", {
+  const res = await axios.get("https://book-backend-1-dwnw.onrender.com/api/Books", {
     params: { page, region, seed, likes, reviews: reviewsCount },
   });
   return res.data;
