@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: book-backend
+    env: docker
+    repo: https://github.com/sifat1/BooksReviewGen/tree/master/BooksReviewGen
+    branch: main
+    rootDir: BooksReviewGen
+    dockerfilePath: Dockerfile
+    plan: free
+    autoDeploy: true
+
+  - type: web
+    name: book-frontend
+    env: docker
+    repo: https://github.com/sifat1/BooksReviewGen/tree/master/frontend
+    branch: main
+    rootDir: frontend
+    dockerfilePath: Dockerfile
+    plan: free
+    autoDeploy: true

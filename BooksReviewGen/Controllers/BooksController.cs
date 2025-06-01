@@ -47,7 +47,7 @@ public class BooksController : ControllerBase
                 .RuleFor(b => b.Authors, f => new[] { f.Name.FullName() })
                 .RuleFor(b => b.Publisher, f => f.Company.CompanyName())
                 .RuleFor(b => b.Likes, f => GenerateCount(likes))
-                .RuleFor(b => b.ReviewCount, reviews)
+                .RuleFor(b => b.ReviewCount, (int)reviews)
                 .RuleFor(b => b.PublishedDate, f => f.Date.Past(10));
 
             var books = bookFaker.Generate(pageSize);
@@ -63,7 +63,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{isbn}/reviews")]
-    public IActionResult GetReviews(string isbn,[FromQuery] string region = "en",[FromQuery] int reviews = 3)
+    public IActionResult GetReviews(string isbn,[FromQuery] string region = "en",[FromQuery] int reviewsCount = 3)
     {
         try
         {
@@ -81,7 +81,7 @@ public class BooksController : ControllerBase
                 .RuleFor(r => r.User, f => f.Name.FullName())
                 .RuleFor(r => r.Text, f => GenerateReviewText(f, region));
 
-            var reviews_res = reviewFaker.Generate(reviews);
+            var reviews_res = reviewFaker.Generate((int)reviewsCount);
 
             _logger.LogInformation("Generated {Count} reviews for ISBN {Isbn}", reviews_res.Count, isbn);
             return Ok(reviews_res);
@@ -95,15 +95,7 @@ public class BooksController : ControllerBase
 
     private static string GenerateBookTitle(Faker faker, string locale)
     {
-        var prefix = locale switch
-        {
-            "fr" => "Le livre de ",
-            "es" => "El libro de ",
-            "it" => "Il libro di ",
-            _ => "The Book of "
-        };
-
-        return prefix + faker.Lorem.Word();
+        return faker.Commerce.ProductName();
     }
 
     private static string GenerateReviewText(Faker faker, string locale)
