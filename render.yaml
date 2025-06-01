@@ -2,8 +2,8 @@ services:
   - type: web
     name: book-backend
     env: docker
-    repo: https://github.com/sifat1/BooksReviewGen/tree/master/BooksReviewGen
-    branch: main
+    repo: https://github.com/sifat1/BooksReviewGen
+    branch: master
     rootDir: BooksReviewGen
     dockerfilePath: Dockerfile
     plan: free
@@ -12,8 +12,8 @@ services:
   - type: web
     name: book-frontend
     env: docker
-    repo: https://github.com/sifat1/BooksReviewGen/tree/master/frontend
-    branch: main
+    repo: https://github.com/sifat1/BooksReviewGen
+    branch: master
     rootDir: frontend
     dockerfilePath: Dockerfile
     plan: free
