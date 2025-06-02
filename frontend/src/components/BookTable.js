@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Table, Card, Button, Spinner, Alert } from "react-bootstrap";
-import BookRow from "./BookRow"; 
+import BookRow from "./BookRow";
 
 
 const fetchBooks = async (page, region, seed, likes, reviewsCount) => {
@@ -70,16 +70,9 @@ function BookTable({ region = "en", seed = 0, likes = 0, reviewsCount = 3 }) {
 
   return (
     <div className="container mt-4">
-      <InfiniteScroll
-        dataLength={books.length}
-        next={fetchMoreBooks}
-        hasMore={hasMore}
-        loader={renderLoader()}
-      >
+      <InfiniteScroll dataLength={books.length} next={fetchMoreBooks} hasMore={hasMore} loader={renderLoader()} >
         <Card className="shadow-sm mb-3">
-          <Card.Header as="h4" className="bg-dark text-white">
-            Book List
-          </Card.Header>
+          <Card.Header as="h4" className="bg-dark text-white">Book List</Card.Header>
           <Table striped bordered hover responsive className="mb-0">
             <thead className="table-light">
               <tr>

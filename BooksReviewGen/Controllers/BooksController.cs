@@ -1,10 +1,9 @@
-using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
-using Bogus;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
 using System;
+using System.Globalization;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Bogus;
 
 namespace BooksReviewGen.Controllers;
 
@@ -22,22 +21,19 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetBooks([FromQuery] string region = "en",[FromQuery] int seed = 42,
-        [FromQuery] int page = 0,[FromQuery] double likes = 0,[FromQuery] int reviews = 0)
+    public IActionResult GetBooks([FromQuery] string region = "en", [FromQuery] int seed = 42,[FromQuery] int page = 0,
+        [FromQuery] double likes = 0,[FromQuery] int reviews = 0)
     {
         try
         {
             if (!IsValidLocale(region))
             {
                 _logger.LogWarning("Invalid locale requested: {Locale}", region);
-                return BadRequest($"Invalid locale. Supported locales are: en, fr, de, es, it");
+                return BadRequest("Invalid locale. Supported locales are: en, fr, es");
             }
 
-            var pageSize = page == 0 ? 20 : DefaultPageSize;
-            var rngSeed = seed + page;
-            Randomizer.Seed = new Random(rngSeed);
-
-            var culture = new CultureInfo(region);
+            int pageSize = page == 0 ? 20 : DefaultPageSize;
+            Randomizer.Seed = new Random(seed + page);
             var faker = new Faker(region);
 
             var bookFaker = new Faker<BookDto>(region)
@@ -47,7 +43,7 @@ public class BooksController : ControllerBase
                 .RuleFor(b => b.Authors, f => new[] { f.Name.FullName() })
                 .RuleFor(b => b.Publisher, f => f.Company.CompanyName())
                 .RuleFor(b => b.Likes, f => GenerateCount(likes))
-                .RuleFor(b => b.ReviewCount, (int)reviews)
+                .RuleFor(b => b.ReviewCount, _ => reviews)
                 .RuleFor(b => b.PublishedDate, f => f.Date.Past(10));
 
             var books = bookFaker.Generate(pageSize);
@@ -58,30 +54,28 @@ public class BooksController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating books");
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating books");
+            return StatusCode(500, "An error occurred while generating books");
         }
     }
 
     [HttpGet("{isbn}/reviews")]
-    public IActionResult GetReviews(string isbn,[FromQuery] string region = "en",[FromQuery] int reviewsCount = 3)
+    public IActionResult GetReviews(string isbn, [FromQuery] string region = "en", [FromQuery] int reviewsCount = 3)
     {
         try
         {
             if (!IsValidLocale(region))
             {
-                return BadRequest($"Invalid locale. Supported locales are: en, fr, de, es, it");
+                return BadRequest("Invalid locale. Supported locales are: en, fr, de, es, it");
             }
 
-            var seed = isbn.GetHashCode();
-            Randomizer.Seed = new Random(seed);
-
+            Randomizer.Seed = new Random(isbn.GetHashCode());
             var faker = new Faker(region);
 
             var reviewFaker = new Faker<ReviewDto>(region)
                 .RuleFor(r => r.User, f => f.Name.FullName())
-                .RuleFor(r => r.Text, f => GenerateReviewText(f, region));
+                .RuleFor(r => r.Text, f => f.Commerce.ProductName());
 
-            var reviews_res = reviewFaker.Generate((int)reviewsCount);
+            var reviews_res = reviewFaker.Generate(reviewsCount);
 
             _logger.LogInformation("Generated {Count} reviews for ISBN {Isbn}", reviews_res.Count, isbn);
             return Ok(reviews_res);
@@ -89,13 +83,8 @@ public class BooksController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating reviews for ISBN {Isbn}", isbn);
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating reviews");
+            return StatusCode(500, "An error occurred while generating reviews");
         }
-    }
-
-    private static string GenerateBookTitle(Faker faker, string locale)
-    {
-        return faker.Commerce.ProductName();
     }
 
     private static string GenerateReviewText(Faker faker, string locale)
@@ -127,14 +116,13 @@ public class BooksController : ControllerBase
 
     private static bool IsValidLocale(string locale)
     {
-        return new[] { "en", "fr", "de", "es", "it" }.Contains(locale);
+        return new[] { "en", "fr", "es" }.Contains(locale);
     }
 
     private static int GenerateCount(double avg)
     {
-        var baseInt = (int)avg;
-        var fractional = avg - baseInt;
+        int baseInt = (int)avg;
+        double fractional = avg - baseInt;
         return baseInt + (Random.Shared.NextDouble() < fractional ? 1 : 0);
     }
 }
-
