@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Table, Card, Button, Spinner, Alert, Badge } from "react-bootstrap";
-import { ChevronDown, ChevronUp } from "react-bootstrap-icons";
-import ReviewList from "./ReviewDetails"; // Make sure this is the correct path
-import BookDetails from "./BookDetails";
+import { Table, Card, Button, Spinner, Alert } from "react-bootstrap";
+import BookRow from "./BookRow"; 
 
-// API call to fetch books
+
 const fetchBooks = async (page, region, seed, likes, reviewsCount) => {
   const res = await axios.get("https://book-backend-1-dwnw.onrender.com/api/Books", {
     params: { page, region, seed, likes, reviews: reviewsCount },
@@ -21,7 +19,6 @@ function BookTable({ region = "en", seed = 0, likes = 0, reviewsCount = 3 }) {
   const [expandedBook, setExpandedBook] = useState(null);
   const [error, setError] = useState(null);
 
-  // Reset state on dependency change
   useEffect(() => {
     setBooks([]);
     setPage(0);
@@ -32,7 +29,7 @@ function BookTable({ region = "en", seed = 0, likes = 0, reviewsCount = 3 }) {
 
   useEffect(() => {
     if (page === 0) fetchMoreBooks();
-  }, [page]); // only run on initial load/reset
+  }, [page]);
 
   const fetchMoreBooks = useCallback(async () => {
     try {
@@ -95,55 +92,16 @@ function BookTable({ region = "en", seed = 0, likes = 0, reviewsCount = 3 }) {
             </thead>
             <tbody>
               {books.map((book, idx) => (
-                <React.Fragment key={`${book.isbn}-${idx}`}>
-                  <tr>
-                    <td>{idx + 1}</td>
-                    <td>
-                      <strong>{book.title}</strong>
-                      <div className="text-muted small">ISBN: {book.isbn}</div>
-                    </td>
-                    <td> {Array.isArray(book.authors) && book.authors.length > 0 ? book.authors.join(", ") : "Unknown author"} </td>
-                    <td>{book.publisher}</td>
-                    <td>
-                      <Button variant="primary" size="sm" onClick={() => toggleBook(book.isbn)}
-                        aria-expanded={expandedBook === book.isbn}
-                      >
-                        {expandedBook === book.isbn ? (
-                          <>
-                            <ChevronUp /> Hide
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown /> Details
-                          </>
-                        )}
-                      </Button>
-                    </td>
-                  </tr>
-                  {expandedBook === book.isbn && (
-                    <tr>
-                      <td colSpan={5} className="bg-light">
-                        <Card className="border-0">
-                          <Card.Body>
-                            <h5 className="mb-3 text-primary">Book Details</h5>
-                            <div className="row">
-                              <div className="col-md-6"> <BookDetails book={book}/></div>
-                              <div className="col-md-6">
-                                <h6 className="text-secondary">
-                                  Reviews{" "}
-                                  <Badge bg="secondary" pill>
-                                    {reviewsCount}
-                                  </Badge>
-                                </h6>
-                                <ReviewList isbn={book.isbn} regions={region} seed={seed} reviews={reviewsCount} />
-                              </div>
-                            </div>
-                          </Card.Body>
-                        </Card>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                <BookRow
+                  key={`${book.isbn}-${idx}`}
+                  book={book}
+                  idx={idx}
+                  expandedBook={expandedBook}
+                  toggleBook={toggleBook}
+                  region={region}
+                  seed={seed}
+                  reviewsCount={reviewsCount}
+                />
               ))}
             </tbody>
           </Table>
