@@ -24,11 +24,11 @@ const BookRow = ({ book, idx, expandedBook, toggleBook, region, seed, reviewsCou
                 >
                     {expandedBook === book.isbn ? (
                         <>
-                            <ChevronUp className="inline-block mr-3" />
+                            <ChevronUp className="inline-block mr-10" />
                         </>
                     ) : (
                         <>
-                            <ChevronDown className="inline-block mr-3" />
+                            <ChevronDown className="inline-block mr-10" />
                         </>
                     )}
                 </Button>
