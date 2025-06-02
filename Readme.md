@@ -4,7 +4,7 @@ BooksReviewGen is a simple tool for generating dummy book reviews. It is designe
 
 ## Features
 
-- Generates random book reviews with titles, authors, ratings, and review text
+- Generates random book reviews with titles, authors and review text
 - Customizable number of reviews
 - Useful for testing, demos, and development
 
