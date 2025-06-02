@@ -18,7 +18,7 @@ const BookRow = ({ book, idx, expandedBook, toggleBook, region, seed, reviewsCou
             <td>
                 <Button
                     variant="primary"
-                    size="sm"
+                    size="bg"
                     onClick={() => toggleBook(book.isbn)}
                     aria-expanded={expandedBook === book.isbn}
                 >
