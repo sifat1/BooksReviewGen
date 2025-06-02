@@ -11,14 +11,8 @@ namespace BooksReviewGen.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    private readonly ILogger<BooksController> _logger;
     private const int MaxPageSize = 50;
     private const int DefaultPageSize = 10;
-
-    public BooksController(ILogger<BooksController> logger)
-    {
-        _logger = logger;
-    }
 
     [HttpGet]
     public IActionResult GetBooks( [FromQuery] string region = "en", [FromQuery] int seed = 42,[FromQuery] int page = 0,
@@ -29,7 +23,6 @@ public class BooksController : ControllerBase
         {
             if (!IsValidLocale(region))
             {
-                _logger.LogWarning("Invalid locale requested: {Locale}", region);
                 return BadRequest("Invalid locale. Supported locales are: en, fr, es");
             }
 
@@ -48,13 +41,10 @@ public class BooksController : ControllerBase
                 .RuleFor(b => b.PublishedDate, f => f.Date.Past(10));
 
             var books = bookFaker.Generate(pageSize);
-
-            _logger.LogInformation("Generated {Count} books for page {Page}", books.Count, page);
             return Ok(books);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating books");
             return StatusCode(500, "An error occurred while generating books");
         }
     }
@@ -66,7 +56,7 @@ public class BooksController : ControllerBase
         {
             if (!IsValidLocale(region))
             {
-                return BadRequest("Invalid locale. Supported locales are: en, fr, de, es, it");
+                return BadRequest("Invalid locale. Supported locales are: en, fr, es");
             }
 
             Randomizer.Seed = new Random(isbn.GetHashCode());
@@ -77,13 +67,10 @@ public class BooksController : ControllerBase
                 .RuleFor(r => r.Text, f => GenerateReviewText(f, region));
 
             var reviews_res = reviewFaker.Generate(reviewsCount);
-
-            _logger.LogInformation("Generated {Count} reviews for ISBN {Isbn}", reviews_res.Count, isbn);
             return Ok(reviews_res);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating reviews for ISBN {Isbn}", isbn);
             return StatusCode(500, "An error occurred while generating reviews");
         }
     }
