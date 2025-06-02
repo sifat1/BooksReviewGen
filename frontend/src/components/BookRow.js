@@ -25,12 +25,10 @@ const BookRow = ({ book, idx, expandedBook, toggleBook, region, seed, reviewsCou
                     {expandedBook === book.isbn ? (
                         <>
                             <ChevronUp className="inline-block mr-1" />
-                            <FaEyeSlash className="inline-block" />
                         </>
                     ) : (
                         <>
                             <ChevronDown className="inline-block mr-1" />
-                            <FaInfoCircle className="inline-block" />
                         </>
                     )}
                 </Button>
