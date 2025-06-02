@@ -21,8 +21,9 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetBooks([FromQuery] string region = "en", [FromQuery] int seed = 42,[FromQuery] int page = 0,
-        [FromQuery] double likes = 0,[FromQuery] int reviews = 0)
+    public IActionResult GetBooks( [FromQuery] string region = "en", [FromQuery] int seed = 42,[FromQuery] int page = 0,
+        [FromQuery] double likes = 0,
+        [FromQuery] int reviews = 0)
     {
         try
         {
@@ -39,7 +40,7 @@ public class BooksController : ControllerBase
             var bookFaker = new Faker<BookDto>(region)
                 .RuleFor(b => b.Index, f => page * pageSize + f.IndexGlobal)
                 .RuleFor(b => b.Isbn, f => f.Commerce.Ean13())
-                .RuleFor(b => b.Title, f => GenerateBookTitle(f, region))
+                .RuleFor(b => b.Title, f => f.Commerce.ProductName())
                 .RuleFor(b => b.Authors, f => new[] { f.Name.FullName() })
                 .RuleFor(b => b.Publisher, f => f.Company.CompanyName())
                 .RuleFor(b => b.Likes, f => GenerateCount(likes))
@@ -59,7 +60,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("{isbn}/reviews")]
-    public IActionResult GetReviews(string isbn, [FromQuery] string region = "en", [FromQuery] int reviewsCount = 3)
+    public IActionResult GetReviews(string isbn,[FromQuery] string region = "en",[FromQuery] int reviewsCount = 3)
     {
         try
         {
@@ -73,7 +74,7 @@ public class BooksController : ControllerBase
 
             var reviewFaker = new Faker<ReviewDto>(region)
                 .RuleFor(r => r.User, f => f.Name.FullName())
-                .RuleFor(r => r.Text, f => f.Commerce.ProductName());
+                .RuleFor(r => r.Text, f => GenerateReviewText(f, region));
 
             var reviews_res = reviewFaker.Generate(reviewsCount);
 
